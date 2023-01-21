@@ -11,6 +11,7 @@ trait NewsTrait
     public function getNews(int $id = null): array
     {
         $news = [];
+        $catigory = [];
         $quantityNews = 10;
 
         if ($id === null) {
@@ -25,6 +26,20 @@ trait NewsTrait
             }
 
             return $news;
+        }
+
+        if ($id === null) {
+            for($i=1; $i < $quantityNews; $i++) {
+                $catigory[$i] = [
+                    'id' => $i,
+                    'title' => \fake()->jobTitle(),
+                    'description' => \fake()->text(100),
+                    'author' => \fake()->userName(),
+                    'created_at' => \now()->format('d-m-y h:i'),
+                ];
+            }
+
+            return $catigory;
         }
 
         return [

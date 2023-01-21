@@ -8,12 +8,12 @@
     </div>
 <?php endforeach; ?>
 
-<?php foreach($catigory_news as $a): ?>
+<?php foreach($catigory as $a): ?>
     <div style="border: 1px solid green">
         <h2><?=$a['title']?></h2>
         <p><?=$a['description']?></p>
         <div><strong><?=$a['author']?>(<?=$a['created_at']?>)</strong>
-            <a href="<?=route('catigory.show', ['id' => $a['id']])?>">More</a>
+            <a href="<?=route('news.show', ['id' => $a['id']])?>">More</a>
         </div>
     </div>
 <?php endforeach; ?>
