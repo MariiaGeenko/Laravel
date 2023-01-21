@@ -18,7 +18,7 @@ trait CatigoryNewsTrait
                 $catigory[$i] = [
                     'id' => $i,
                     'title' => \fake()->jobTitle(),
-                    'catigory_id' => \fake()->text(100),
+                    'catigory_id' => \fake()->unique()->randomDigit(),
                     'description' => \fake()->text(100),
                     'author' => \fake()->userName(),
                     'created_at' => \now()->format('d-m-y h:i'),
