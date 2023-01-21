@@ -8,16 +8,16 @@ use Illuminate\Http\Request;
 
 class CatigoryNewsController extends Controller
 {
-    use NewsTrait;
+    use CatigoryNewsTrait;
     public function index()
     {
         return \view('catigory.index', [
-            'catigory' => $this->getNews(),
+            'catigory' => $this->getCatigoryNews(),
         ]);
     }
 
     public function show(int $id)
     {
-        return $this->getNews($id);
+        return $this->getCatigoryNews($id);
     }
 }
