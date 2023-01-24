@@ -11,7 +11,6 @@ trait NewsTrait
     public function getNews(int $id = null): array
     {
         $news = [];
-        $catigory = [];
         $quantityNews = 10;
 
         if ($id === null) {

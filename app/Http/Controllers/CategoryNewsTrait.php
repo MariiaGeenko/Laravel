@@ -6,26 +6,26 @@ namespace App\Http\Controllers;
 use Illuminate\Cache\RetrievesMultipleKeys;
 use PhpParser\Node\Stmt\Return_;
 
-trait CatigoryNewsTrait
+trait CategoryNewsTrait
 {
-    public function getCatigoryNews(int $id = null): array
+    public function getCategoryNews(int $id = null): array
     {
-        $catigory = [];
+        $category = [];
         $quantityNews = 10;
 
         if ($id === null) {
             for($i=1; $i < $quantityNews; $i++) {
-                $catigory[$i] = [
+                $category[$i] = [
                     'id' => $i,
                     'title' => \fake()->jobTitle(),
-                    'catigory_id' => \fake()->unique()->randomDigit(),
+                    'category_id' => \fake()->unique()->randomDigit(),
                     'description' => \fake()->text(100),
                     'author' => \fake()->userName(),
                     'created_at' => \now()->format('d-m-y h:i'),
                 ];
             }
 
-            return $catigory;
+            return $category;
         }
 
         return [
