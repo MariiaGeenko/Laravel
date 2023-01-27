@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -12,9 +13,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
-        //
+        return \view('admin.categories.index');
     }
 
     /**
@@ -22,9 +23,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(): View
     {
-        //
+        return \view('admin.categories.create');
     }
 
     /**
@@ -35,7 +36,11 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+        ]);
+
+        return response()->json($request->only(['title', 'phone', 'email', 'description']));
     }
 
     /**

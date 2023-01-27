@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
 class NewsController extends Controller
@@ -14,9 +15,9 @@ class NewsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(): View
     {
-        //
+        return \view('admin.news.index');
     }
 
     /**
@@ -24,9 +25,10 @@ class NewsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create()//: View
     {
-        //
+        $render = \view('admin.news.create');
+        return response()->download('robots.txt');
     }
 
     /**
@@ -37,7 +39,11 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required',
+        ]);
+
+        return response()->json($request->only(['title', 'author', 'description']));
     }
 
     /**
