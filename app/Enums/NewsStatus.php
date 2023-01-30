@@ -7,7 +7,7 @@ declare(strict_types=1);
  use App\Enums\NewsStatus;
 
  enum NewsStatus: string
- {
+  {
      case DRAFT = 'draft';
      case ACTIVE = 'active';
      case BLOCKED = 'blocked';
