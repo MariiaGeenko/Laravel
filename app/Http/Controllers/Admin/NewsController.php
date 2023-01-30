@@ -27,8 +27,7 @@ class NewsController extends Controller
      */
     public function create()//: View
     {
-        $render = \view('admin.news.create');
-        return response()->download('robots.txt');
+        return \view('admin.news.create');
     }
 
     /**
