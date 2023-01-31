@@ -4,8 +4,6 @@ declare(strict_types=1);
 
  namespace App\Enums;
 
- use App\Enums\NewsStatus;
-
  enum NewsStatus: string
   {
      case DRAFT = 'draft';
