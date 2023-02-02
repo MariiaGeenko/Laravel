@@ -20,6 +20,12 @@ class NewsController extends Controller
     {
         $model = new News();
         $newsList = $model->getNews();
+        $join = \DB::table('news')
+            ->join('category_has_news as chn', 'news.id', '=', 'chn.news_id')
+            ->join('categories', 'chn.category_id', '=', 'categories.id')
+            ->select('news.*', 'chn.category_id', 'categories.title as ctitle')
+            ->get();
+
         return \view('admin.news.index', [
             'newsList' => $newsList,
         ]);
