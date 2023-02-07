@@ -6,12 +6,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\NewsStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\News\CreateRequest;
+use App\Http\Requests\News\EditRequest;
 use App\Models\News;
 use App\QueryBuilders\CategoriesQueryBuilder;
 use App\QueryBuilders\NewsQueryBuilder;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
 
 class NewsController extends Controller
@@ -46,22 +49,19 @@ class NewsController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param Request $request
+     * @param CreateRequest $request
      * @return RedirectResponse
      */
-    public function store(Request $request): RedirectResponse
+    public function store(CreateRequest $request): RedirectResponse
     {
-        $request->validate([
-            'title' => 'required',
-        ]);
+        $news = News::create($request->validated());
 
-        $news = new News($request->except('_token', 'category_id'));
-
-        if ($news->save()) {
-            return \redirect()->route('admin.news.index')->with('success', 'news add successfully');
+        if ($news) {
+            $news->categories()->attach($request->getCategoryIds());
+            return \redirect()->route('admin.news.index')->with('success', __('messages.admin.news.success'));
         }
 
-        return \back()->with('error', 'failure to add news');
+        return \back()->with('error', __('messages.admin.news.fail'));
     }
 
     /**
@@ -94,29 +94,37 @@ class NewsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param Request $request
+     * @param EditRequest $request
      * @param News $news
      * @return RedirectResponse
      */
-    public function update(Request $request, News $news): RedirectResponse
+    public function update(EditRequest $request, News $news): RedirectResponse
     {
-        $news = $news->fill($request->except('_token', 'category_id'));
+        $news = $news->fill($request->validated());
         if ($news->save()) {
-            $news->categories()->sync((array) $request->input('category_ids'));
-            return \redirect()->route('admin.news.index')->with('success', 'news add successfully');
+            $news->categories()->sync($request->getCategoryIds());
+            return \redirect()->route('admin.news.index')->with('success', __('messages.admin.news.success'));
         }
 
-        return \back()->with('error', 'failure to add news');
+        return \back()->with('error', __('messages.admin.news.fail'));
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param News $news
      * @return Response
      */
-    public function destroy($id)
+    public function destroy(News $news): JsonResource
     {
-        //
+        try {
+            $news->delete();
+
+            return \response()->json('ok');
+        } catch (\Exception $exception) {
+            \Log::error($exception->getMessage(), [$exception]);
+
+            return response()->json('error', 400);
+        }
     }
 }
