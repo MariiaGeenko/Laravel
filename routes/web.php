@@ -1,8 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Http\Controllers\Account\IndexController as AccountController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryNewsController;
 use App\Http\Controllers\NewsController;
 use App\Http\Controllers\Admin\IndexController as AdminController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
@@ -20,6 +25,21 @@ use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::group(['middleware' => 'auth'], static function (){
+    Route::get('/logout', [LoginController::class, 'logout'])->name('account.logout');
+    Route::get('/account', AccountController::class)->name('account');
+    // admin route
+    Route::group(['prefix' => 'admin', 'as'=> 'admin.', 'middleware' => 'is.admin'], static function() {
+        Route::get('/', AdminController::class)
+            ->name('index');
+        Route::resource('categories', AdminCategoryController::class);
+        Route::resource('news', AdminNewsController::class);
+        Route::resource('source', AdminSourceController::class);
+        Route::resource('orders', OrderSourceController::class);
+        Route::resource('users', AdminUserController::class);
+    });
 });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], static function () {
@@ -45,15 +65,17 @@ Route::get('/category/{id}/show', [CategoryNewsController::class, 'show'])
     ->where('id', '\d+')
         ->name('category.show');
 
-Route::get('collection', function() {
-    $names = ['names' => ['Ann', 'Billy', 'Sam', 'Jhon', 'Andy', 'Feeby', 'Edd', 'Jil', 'Jeck', 'Freddy']];
-    $collection = collect([
-        ['product' => 'Desk', 'price' => 200],
-        ['product' => 'Chair', 'price' => 100],
-        ['product' => 'Bookcase', 'price' => 150],
-        ['product' => 'Door', 'price' => 100],
-    ]);
-
-    $collect = \collect($names);
+Route::get('session', function() {
+    $sessionName = 'test';
+    if (session()->has($sessionName)) {
+        // dd(session()->get($sessionName), session()->all());
+        session()->forget($sessionName);
+    }
+    dd(session()->all());
+    session()->put($sessionName);
 
 });
+
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
