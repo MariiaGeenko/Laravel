@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\Account\IndexController as AccountController;
+use App\Http\Controllers\Admin\ParserController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\CategoryNewsController;
 use App\Http\Controllers\NewsController;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\SocialProvidersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +37,7 @@ Route::group(['middleware' => 'auth'], static function (){
     Route::group(['prefix' => 'admin', 'as'=> 'admin.', 'middleware' => 'is.admin'], static function() {
         Route::get('/', AdminController::class)
             ->name('index');
+        Route::get('/', ParserController::class)->name('parser');
         Route::resource('categories', AdminCategoryController::class);
         Route::resource('news', AdminNewsController::class);
         Route::resource('source', AdminSourceController::class);
@@ -45,6 +49,7 @@ Route::group(['middleware' => 'auth'], static function (){
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], static function () {
     Route::get('/', AdminController::class)
         ->name('index');
+
     Route::resource('categories', AdminCategoryController::class);
     Route::resource('news', AdminNewsController::class);
 });
@@ -79,3 +84,12 @@ Route::get('session', function() {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+Route::group(['middleware' => 'guest'], static function() {
+    Route::get('/auth/redirect/{driver}', [SocialProvidersController::class, 'redirect'])
+        ->where('driver', '\w*')
+        ->name('social.auth.redirect');
+
+    Route::get('/auth/callback/{driver}', [SocialProvidersController::class, 'callback'])
+        ->where('driver', '\w*');
+});
