@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\NewsController as AdminNewsController;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\SocialProvidersController;
+use UniSharp\LaravelFilemanager\Lfm;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,24 +32,22 @@ Route::get('/', function () {
 });
 
 Route::group(['middleware' => 'auth'], static function (){
-    Route::get('/logout', [LoginController::class, 'logout'])->name('account.logout');
-    Route::get('/account', AccountController::class)->name('account');
-    // admin route
-    Route::group(['prefix' => 'admin', 'as'=> 'admin.', 'middleware' => 'is.admin'], static function() {
-        Route::get('/', AdminController::class)
-            ->name('index');
-        Route::get('/', ParserController::class)->name('parser');
-        Route::resource('categories', AdminCategoryController::class);
-        Route::resource('news', AdminNewsController::class);
-        Route::resource('source', AdminSourceController::class);
-        Route::resource('orders', OrderSourceController::class);
-        Route::resource('users', AdminUserController::class);
-    });
+    Route::get('/logout', [LoginController::class, 'logout'])
+        ->name('account.logout');
+    Route::get('/account', AccountController::class)
+        ->name('account');
 });
+
+    // filemanager route
+    Route::group(['prefix' => 'laravel-file-manager', 'middleware' => ['web']], static function () {
+        Lfm::routes();
+    });
 
 Route::group(['prefix' => 'admin', 'as' => 'admin.'], static function () {
     Route::get('/', AdminController::class)
         ->name('index');
+    Route::get('/parser', ParserController::class)
+        ->name('parser');
 
     Route::resource('categories', AdminCategoryController::class);
     Route::resource('news', AdminNewsController::class);

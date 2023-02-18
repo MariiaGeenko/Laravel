@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Models\News;
 use App\Services\Contracts\Parser;
 use Orchestra\Parser\Xml\Facade as XmlParser;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ParserService implements Parser
 {
     private string $link;
-
-
 
     public function setLink(string $link): self
     {
@@ -19,11 +21,11 @@ class ParserService implements Parser
        return $this;
     }
 
-    public function getParseData(): array
+    public function saveParseData(): void
     {
         $xml = XmlParser::load($this->link);
 
-        return  $xml->parse([
+        $data = $xml->parse([
             'title' => [
                 'uses' => 'channel.title'
             ],
@@ -38,7 +40,16 @@ class ParserService implements Parser
             ],
             'news' => [
                 'uses' => 'channel.item[title,link,guid,description,pubDate]'
-            ]
+            ],
         ]);
+
+        foreach ($data["news"] as $news) {
+            News::create([
+                'title' => $news['title'],
+                'link' => $news['link'],
+                'description' => $news['description'],
+                'guid' => $news['guid'],
+            ]);
+        }
     }
 }

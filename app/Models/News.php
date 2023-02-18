@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Support\Facades\DB;
 
 class News extends Model
 {
@@ -17,11 +18,13 @@ class News extends Model
     protected $table = 'news';
 
     protected $fillable = [
+        'guid',
         'title',
         'author',
         'status',
         'image',
         'description',
+        'link',
     ];
 
     protected $casts = [
@@ -40,5 +43,11 @@ class News extends Model
     {
         return $this->belongsToMany(Category::class, 'category_has_news',
             'news_id', 'category_id', 'id', 'id');
+    }
+
+    public function getNewsById(int $id): mixed
+    {
+        return DB::table($this->table)->find($id);
+
     }
 }

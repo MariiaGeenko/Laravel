@@ -13,5 +13,9 @@
         "postcss": "^8.1.14",
         "sass": "^1.56.1",
         "vite": "^4.0.0"
+    },
+    "dependencies": {
+        "@ckeditor/ckeditor5-ckbox": "^36.0.1",
+        "@ckeditor/ckeditor5-image": "^36.0.1"
     }
 }

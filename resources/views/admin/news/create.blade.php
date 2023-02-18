@@ -55,5 +55,26 @@
             <br>
             <button type="submit" class="btn btn-success">Save</button>
         </form>
+            <br>
+            <button class="btn btn-danger">
+                <a href="{{ route('admin.news.index') }}" style="text-decoration: none; color: #EEEEEE">Отменить</a>
+            </button>
     </div>
 @endsection
+
+@push('js')
+    <script src="//cdn.ckeditor.com/4.6.2/standard/ckeditor.js"></script>
+    <script>
+        var options = {
+            filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+            filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+            filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+        };
+    </script>
+    <script>
+        import CKEDITOR from "lodash";
+
+        CKEDITOR.replace('description', options);
+    </script>
+@endpush

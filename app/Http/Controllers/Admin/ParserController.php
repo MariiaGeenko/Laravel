@@ -7,21 +7,34 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Contracts\Parser;
 use Illuminate\Http\Request;
+use App\Jobs\JobNewsParser;
+use App\Models\News;
+use App\Models\Source;
+use App\QueryBuilders\SourceQueryBuilder;
+use App\Services\ParserServices;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 
 class ParserController extends Controller
 {
     /**
      * Handle the incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param SourceQueryBuilder $sourceQueryBuilder
+     * @param Request $request
+     * @return View|Factory|Application
      */
-    public function __invoke(Request $request, Parser $parser)
+    public function __invoke(SourceQueryBuilder $sourceQueryBuilder, Request $request): View|Factory|Application
     {
-        $load = $parser->setLink('https://news.yandex.ru/army.rss')->getParseData();
 
+        $urls = $sourceQueryBuilder->getAll()->pluck('link');
+        //        dd($urls);
+        foreach ($urls as $url){
+            \dispatch(new JobNewsParser($url));
 
-
-        dd($load);
+        }
+        return \view('admin.parser.index');
     }
 }

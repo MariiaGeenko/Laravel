@@ -16,6 +16,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Response;
+use App\Services\UploadService;
 
 class NewsController extends Controller
 {
@@ -96,35 +97,43 @@ class NewsController extends Controller
      *
      * @param EditRequest $request
      * @param News $news
+     * @param UploadService $uploadService
      * @return RedirectResponse
      */
-    public function update(EditRequest $request, News $news): RedirectResponse
+
+    public function update(EditRequest $request, News $news, UploadService $uploadService): RedirectResponse
     {
-        $news = $news->fill($request->validated());
-        if ($news->save()) {
+        $validates = $request->validated();
+        $news = $news->fill($validates);
+
+        if ($request->hasFile('image')) {
+            $validates['image'] = $uploadService->uploadImage($request->file('image'));
+        }
+
+        if ($news->update($validates)) {
             $news->categories()->sync($request->getCategoryIds());
             return \redirect()->route('admin.news.index')->with('success', __('messages.admin.news.success'));
         }
-
         return \back()->with('error', __('messages.admin.news.fail'));
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param News $news
-     * @return Response
-     */
-    public function destroy(News $news): JsonResource
-    {
-        try {
-            $news->delete();
+        /**
+         * Remove the specified resource from storage.
+         *
+         * @param News $news
+         * @return \Illuminate\Http\JsonResponse
+         */
+        public
+        function destroy(News $news): \Illuminate\Http\JsonResponse
+        {
+            try {
+                $news->delete();
 
-            return \response()->json('ok');
-        } catch (\Exception $exception) {
-            \Log::error($exception->getMessage(), [$exception]);
+                return \response()->json('ok');
+            } catch (\Exception $exception) {
+                \Log::error($exception->getMessage(), [$exception]);
 
-            return response()->json('error', 400);
+                return response()->json('error', 400);
+            }
         }
     }
-}
